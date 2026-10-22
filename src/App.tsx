@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { Package, Compass, Layers, Settings } from "lucide-react";
@@ -7,6 +7,7 @@ import TopBar from "./TopBar";
 import ModsTab from "./ModsTab";
 import SettingsTab from "./SettingsTab";
 import PresetsTab from "./PresetsTab";
+import BrowseTab from "./BrowseTab";
 import { useSettings } from "./settings";
 import { sampleMods } from "./sampleMods";
 
@@ -17,16 +18,6 @@ const TABS = [
   { id: "Settings", icon: Settings },
 ] as const;
 type Tab = (typeof TABS)[number]["id"];
-
-function Empty({ icon: I, text }: { icon: ComponentType<{ size?: number }>; text: string }) {
-  return (
-    <div className="flex h-full flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border text-muted">
-      <I size={40} />
-      <div className="font-medium text-text">Coming soon</div>
-      <p className="text-sm">{text}</p>
-    </div>
-  );
-}
 
 export default function App() {
   const [tab, setTab] = useState<Tab>("Mods");
@@ -70,7 +61,7 @@ export default function App() {
         />
         <main className="min-h-0 flex-1 overflow-y-auto p-6">
           {tab === "Mods" && <ModsTab mods={mods} setMods={setMods} />}
-          {tab === "Browse" && <Empty icon={Compass} text="Discover mods from the community here." />}
+          {tab === "Browse" && <BrowseTab />}
           {tab === "Presets" && <PresetsTab mods={mods} setMods={setMods} />}
           {tab === "Settings" && <SettingsTab s={settings} set={set} detected={detected} />}
         </main>

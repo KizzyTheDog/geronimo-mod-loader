@@ -2,87 +2,13 @@ import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import {
   Search, MoreHorizontal, Eye, FolderOpen, Settings, RefreshCw, RotateCw, Link, Flag, Trash2,
-  BadgeCheck, ArrowLeft, TriangleAlert,
 } from "lucide-react";
 import type { Mod } from "./sampleMods";
+import ModPage, { Thumb, Badges } from "./ModPage";
 import { Menu, Trigger, Item, Sep, Confirm, iconBtn, field } from "./ui";
 
 const FILTERS = ["All", "Enabled", "Disabled", "Updates", "Problems"] as const;
 const SORTS = ["Name", "Recently installed", "Last updated"] as const;
-
-const gradient = (name: string) => {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 360;
-  return `linear-gradient(135deg, hsl(${h} 70% 55%), hsl(${(h + 50) % 360} 70% 35%))`;
-};
-
-function Thumb({ name, size = 48 }: { name: string; size?: number }) {
-  return (
-    <div
-      style={{ background: gradient(name), width: size, height: size }}
-      className="flex shrink-0 items-center justify-center rounded-xl text-lg font-bold text-white"
-    >
-      {name[0]}
-    </div>
-  );
-}
-
-function Badges({ mod }: { mod: Mod }) {
-  return (
-    <>
-      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[11px] font-medium text-text">{mod.type}</span>
-      {mod.verified ? (
-        <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[11px] font-medium text-accent">
-          <BadgeCheck size={12} /> Verified
-        </span>
-      ) : (
-        <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-400">Unverified</span>
-      )}
-    </>
-  );
-}
-
-function ModPage({ mod, onBack }: { mod: Mod; onBack: () => void }) {
-  return (
-    <div className="mx-auto w-full max-w-3xl">
-      <button onClick={onBack} className="mb-4 inline-flex cursor-pointer items-center gap-2 text-sm text-muted hover:text-text">
-        <ArrowLeft size={16} /> Back
-      </button>
-      <div className="h-36 rounded-2xl" style={{ background: gradient(mod.name) }} />
-      <div className="mt-6 flex items-center gap-4">
-        <Thumb name={mod.name} size={64} />
-        <div>
-          <h1 className="text-2xl font-semibold">{mod.name}</h1>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted">
-            <span>by {mod.author}</span><span>v{mod.version}</span><Badges mod={mod} />
-          </div>
-        </div>
-      </div>
-      {!mod.verified && (
-        <div role="alert" className="mt-6 flex gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-300">
-          <TriangleAlert size={18} className="mt-0.5 shrink-0" />
-          <p>
-            <b>⚠ Unverified</b> — this mod hasn't been reviewed by the Hub admins. Its contents might not be safe. Use at your own risk.
-          </p>
-        </div>
-      )}
-      <section className="mt-6 rounded-2xl border border-border bg-panel p-6">
-        <h2 className="mb-2 font-semibold">Description</h2>
-        <p className="text-sm text-muted">{mod.description}</p>
-      </section>
-      <section className="mt-4 rounded-2xl border border-border bg-panel p-6">
-        <h2 className="mb-2 font-semibold">Dependencies</h2>
-        {mod.dependencies.length ? (
-          <ul className="list-inside list-disc text-sm text-muted">
-            {mod.dependencies.map((d) => <li key={d}>{d}</li>)}
-          </ul>
-        ) : (
-          <p className="text-sm text-muted">No dependencies</p>
-        )}
-      </section>
-    </div>
-  );
-}
 
 export default function ModsTab({ mods, setMods }: { mods: Mod[]; setMods: Dispatch<SetStateAction<Mod[]>> }) {
   const [q, setQ] = useState("");
