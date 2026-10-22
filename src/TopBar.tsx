@@ -17,18 +17,30 @@ function Avatar({ size }: { size: number }) {
   );
 }
 
-export default function TopBar({ onSettings }: { onSettings: () => void }) {
+interface Props {
+  found: boolean;
+  defaultLaunch: "vr" | "flatscreen";
+  onLaunch: (flatscreen: boolean) => void;
+  onSettings: () => void;
+}
+
+export default function TopBar({ found, defaultLaunch, onLaunch, onSettings }: Props) {
   return (
     <header className="flex items-center gap-3 border-b border-border px-6 py-3">
-      <span className="inline-flex items-center gap-2 rounded-full border border-border bg-panel px-3 py-1.5 text-xs text-muted">
-        <span className="h-2 w-2 rounded-full bg-muted" /> GERONIMO not found
-      </span>
+      <button
+        onClick={found ? undefined : onSettings}
+        className={`inline-flex items-center gap-2 rounded-full border border-border bg-panel px-3 py-1.5 text-xs text-muted ${found ? "cursor-default" : "cursor-pointer hover:text-text"}`}
+      >
+        <span className={`h-2 w-2 rounded-full ${found ? "bg-green-500" : "bg-muted"}`} />
+        {found ? "GERONIMO found" : "GERONIMO not found"}
+      </button>
       <div className="flex-1" />
 
       <div className="flex">
         <button
-          onClick={log("play: vr")}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-l-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+          disabled={!found}
+          onClick={() => onLaunch(defaultLaunch === "flatscreen")}
+          className="inline-flex cursor-pointer items-center gap-2 rounded-l-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Play size={16} /> Play
         </button>
@@ -36,15 +48,16 @@ export default function TopBar({ onSettings }: { onSettings: () => void }) {
           trigger={
             <Trigger
               aria-label="Choose launch mode"
-              className="inline-flex cursor-pointer items-center rounded-r-lg border-l border-white/25 bg-accent px-2 text-white hover:brightness-110"
+              disabled={!found}
+              className="inline-flex cursor-pointer items-center rounded-r-lg border-l border-white/25 bg-accent px-2 text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronDown size={16} />
             </Trigger>
           }
         >
-          <Item label="VR" onSelect={log("play: VR")} />
-          <Item label="Flatscreen (-nohmd)" onSelect={log("play: flatscreen -nohmd")} />
-          <Item label="Safe mode (all mods off)" onSelect={log("play: safe mode")} />
+          <Item label="VR" onSelect={() => onLaunch(false)} />
+          <Item label="Flatscreen (-nohmd)" onSelect={() => onLaunch(true)} />
+          <Item label="Safe mode (coming soon)" disabled />
         </Menu>
       </div>
 

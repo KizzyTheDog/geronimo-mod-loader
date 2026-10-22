@@ -16,9 +16,9 @@ export const menuPanel =
 const itemCls =
   "flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm outline-none data-[highlighted]:bg-white/10";
 
-export function Item({ icon: I, label, onSelect, danger }: { icon?: Icon; label: string; onSelect?: () => void; danger?: boolean }) {
+export function Item({ icon: I, label, onSelect, danger, disabled }: { icon?: Icon; label: string; onSelect?: () => void; danger?: boolean; disabled?: boolean }) {
   return (
-    <Dd.Item onSelect={onSelect} className={`${itemCls} ${danger ? "text-red-400" : ""}`}>
+    <Dd.Item onSelect={onSelect} disabled={disabled} className={`${itemCls} ${danger ? "text-red-400" : ""} data-[disabled]:cursor-not-allowed data-[disabled]:opacity-40`}>
       {I && <I size={16} className={danger ? "" : "text-muted"} />}
       {label}
     </Dd.Item>
@@ -42,8 +42,8 @@ export function Menu({ trigger, children, align = "end" }: { trigger: ReactNode;
 export const Trigger = Dd.Trigger;
 
 export function Modal({
-  title, children, confirmLabel, onConfirm, onClose, confirmDisabled,
-}: { title: string; children: ReactNode; confirmLabel: string; onConfirm: () => void; onClose: () => void; confirmDisabled?: boolean }) {
+  title, children, confirmLabel, onConfirm, onClose, confirmDisabled, danger,
+}: { title: string; children: ReactNode; confirmLabel: string; onConfirm: () => void; onClose: () => void; confirmDisabled?: boolean; danger?: boolean }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
@@ -65,10 +65,10 @@ export function Modal({
         <div className="flex justify-end gap-2">
           <button className={btn} onClick={onClose}>Cancel</button>
           <button
-            autoFocus
+            autoFocus={danger}
             disabled={confirmDisabled}
             onClick={onConfirm}
-            className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+            className={`rounded-lg ${danger ? "bg-red-600 hover:bg-red-500" : "bg-accent hover:brightness-110"} px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer`}
           >
             {confirmLabel}
           </button>
@@ -85,6 +85,7 @@ export function Confirm({ title, text, confirmLabel, typeWord, onConfirm, onClos
   const [typed, setTyped] = useState("");
   return (
     <Modal
+      danger
       title={title}
       confirmLabel={confirmLabel}
       onClose={onClose}

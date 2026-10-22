@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import * as Switch from "@radix-ui/react-switch";
 import {
   Search, MoreHorizontal, Eye, FolderOpen, Settings, RefreshCw, RotateCw, Link, Flag, Trash2,
   BadgeCheck, ArrowLeft, TriangleAlert,
 } from "lucide-react";
-import { sampleMods, type Mod } from "./sampleMods";
+import type { Mod } from "./sampleMods";
 import { Menu, Trigger, Item, Sep, Confirm, iconBtn, field } from "./ui";
 
 const FILTERS = ["All", "Enabled", "Disabled", "Updates", "Problems"] as const;
@@ -84,8 +84,7 @@ function ModPage({ mod, onBack }: { mod: Mod; onBack: () => void }) {
   );
 }
 
-export default function ModsTab() {
-  const [mods, setMods] = useState(sampleMods);
+export default function ModsTab({ mods, setMods }: { mods: Mod[]; setMods: Dispatch<SetStateAction<Mod[]>> }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All");
   const [sort, setSort] = useState<(typeof SORTS)[number]>("Name");
