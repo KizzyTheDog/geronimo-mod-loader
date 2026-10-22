@@ -8,7 +8,7 @@ fn steam_path() -> String {
         use winreg::{RegKey, enums::HKEY_CURRENT_USER};
         if let Ok(k) = RegKey::predef(HKEY_CURRENT_USER).open_subkey(r"Software\Valve\Steam") {
             if let Ok(p) = k.get_value::<String, _>("SteamPath") {
-                return p;
+                return p.replace('/', "\\");
             }
         }
     }
@@ -55,4 +55,20 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![detect_game, validate_game])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_vdf() {
+        let t = "\"libraryfolders\"\n{\n\t\"0\"\n\t{\n\t\t\"path\"\t\t\"D:\\SteamLibrary\"\n\t}\n}";
+        assert_eq!(vdf_values(t, "path"), vec![r"D:\SteamLibrary"]);
+    }
+
+    #[test]
+    fn finds_game_here() {
+        println!("detected: {:?}", detect_game());
+    }
 }
